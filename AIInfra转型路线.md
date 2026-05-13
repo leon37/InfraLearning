@@ -382,3 +382,32 @@
 - 还没有做出训练平台级 CRD + controller + queue + retry 的项目闭环
 
 但你已经具备继续打这条线的前置基础，不需要再回到 Docker / K8s 入门重学。
+
+## 9. 2026-04-28 路线优先级调整
+
+基于当前转型评估和第 5-6 周 TrainJob Controller / Gang Scheduling 学习结果，第二阶段后续路线不再按知识地图平均推进，而应围绕求职主线收敛。
+
+核心原则：
+
+- 后续学习必须服务于三个可面试项目：`TrainJob Operator`、`GPU-aware Scheduler Plugin`、`DDP 训练实验平台`
+- 不把 RDMA、CUDA、Megatron、DeepSpeed 作为当前主线，除非它们服务于 DDP 实验平台
+- CSI、存储、混部、RDMA 先作为面试扩展点处理，不在当前阶段追专家深度
+- 每个阶段都必须产出代码、指标或可讲清的机制链
+
+调整后的优先级：
+
+1. 第 7-8 周继续做 DDP，但收窄到 `torchrun`、`rank`、`world size`、`process group`、`all-reduce`、`gradient sync`、`step time`
+2. 第 9 周做通信瓶颈实验，重点观察 `world size`、`batch size`、`gradient accumulation` 对吞吐和 step time 的影响
+3. 提前补可观测性，至少形成 step time、吞吐、queue latency、job completion time、GPU utilization 的指标心智
+4. 提前回到 TrainJob Operator，把第 5-6 周原型升级为能拉起 DDP worker、聚合状态、处理失败重试的控制面
+5. 最后再补 CSI / 存储、NCCL / RDMA、训练/推理混部，作为完整链路的扩展能力
+
+调整后的执行顺序：
+
+1. DDP 最小训练实验
+2. DDP 通信瓶颈和指标采集
+3. TrainJob Operator 接入 DDP worker
+4. Scheduler Plugin + TrainJob + DDP 形成完整链路演示
+5. CSI / 存储、NCCL / RDMA、混部作为面试扩展点补齐
+
+这次调整不推翻原路线，只改变投入权重。当前目标不是成为 GPU / HPC 专家，而是证明自己能以 Go + Kubernetes 平台研发身份进入 AI Infra 相邻岗位。
