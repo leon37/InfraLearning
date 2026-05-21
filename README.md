@@ -16,6 +16,9 @@
 - [实验索引](./LAB_INDEX.md)：按周次映射核心概念、代码路径和关键文档。
 - [AI Infra 训练平台最小闭环 Demo](./docs/aiinfra-demo.md)：三个项目的端到端 demo 说明、启动顺序、验收命令和边界。
 - [AI Infra 项目面试手册](./docs/interview-playbook.md)：项目讲法、高频追问、诚实边界和简历表述草稿。
+- [三项目投递前查漏补缺清单](./docs/pre-interview-gap-closure-plan.md)：投初级岗位前需要补齐的薄弱点、路径和验收标准。
+- [三项目投递前查漏补缺进度](./docs/pre-interview-gap-closure-progress.md)：记录补缺项状态、产物路径和当前下一步。
+- [国家算力网方向与个人转型应对](./docs/national-computing-network-response.md)：将当前项目映射到算力网方向，调整后续学习与面试表达。
 - [AI Infra 转型路线](./AIInfra转型路线.md)：长期路线和阶段目标。
 - [转型评估与规划基准](./转型评估与规划基准.md)：岗位定位、优先级和项目收口原则。
 - [第一阶段归档](./archive/progress_stage_1.md)：Docker 与 Kubernetes 基础阶段记录。

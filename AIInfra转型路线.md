@@ -411,3 +411,38 @@
 5. CSI / 存储、NCCL / RDMA、混部作为面试扩展点补齐
 
 这次调整不推翻原路线，只改变投入权重。当前目标不是成为 GPU / HPC 专家，而是证明自己能以 Go + Kubernetes 平台研发身份进入 AI Infra 相邻岗位。
+
+## 10. 2026-05-17 算力网方向补充
+
+基于国家算力网、算力互联互通节点体系和算电协同相关政策动向，后续路线需要在表达和项目收口上更明确地贴近“算力资源平台化”。
+
+这不意味着转向 GPU / RDMA / 机房能源专家路线。当前最适合的切入点仍然是：
+
+- AI workload 控制面
+- 训练任务编排
+- 算力资源抽象
+- 队列、配额、优先级
+- 调度策略
+- 任务生命周期与可观测性
+
+当前三个项目与算力网方向的映射：
+
+- `TrainJob` CRD：训练任务抽象
+- `resources.requests`：算力需求表达
+- `Node.status.allocatable`：节点算力资源账本
+- Scheduler Plugin：算力选择 / 调度策略
+- TrainJob status：任务生命周期状态
+- checkpoint PVC：训练状态持久化
+
+第 16 周项目收口时，优先补强：
+
+1. queue / quota / priority 的设计文档或最小原型
+2. queue latency、job running time、job completion time 等指标
+3. scheduler 未启动、Node allocatable 缺失、PVC Pending 等失败案例复盘
+4. GPU device plugin、DCGM、Prometheus 的基础链路说明
+
+后续面试表达应避免把当前项目包装成真实 GPU 集群性能优化经验。更合适的表达是：
+
+```text
+当前项目是面向 AI 训练任务的 Kubernetes 控制面与调度扩展 demo，对应算力网中的任务抽象、资源需求表达、调度策略和任务生命周期管理。真实跨区域算力调度、多租户配额、GPU 指标和算电协同是后续演进方向。
+```

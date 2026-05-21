@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI Infra Gap Closure"
+  short_description: "AI Infra 项目查漏补缺与面试验收流程"
+  default_prompt: "Use $aiinfra-gap-closure to run an interview-style gap-closure loop for my AI Infra projects."

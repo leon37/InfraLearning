@@ -9,6 +9,8 @@
 - 云原生 AI 平台研发
 - Scheduler Plugin 入门扩展
 - 机器学习平台控制面研发
+- 智算平台任务调度 / 资源管理
+- 算力资源平台化 / 多集群资源管理的初级岗位
 
 当前不应包装成：
 
@@ -21,6 +23,12 @@
 
 ```text
 我主要从 Go 后端和 Kubernetes 控制面方向切入 AI Infra，当前项目重点是训练任务控制面、调度器扩展和 DDP worker 启动链路。我用本地 kind + Gloo 验证平台语义和 DDP 契约，知道这不能等同于真实 GPU/NCCL/RDMA 性能优化经验。
+```
+
+结合国家算力网方向，可以补充：
+
+```text
+我关注的不是单点训练脚本，而是 AI workload 如何被平台化管理：任务抽象、资源需求表达、调度策略、队列配额、状态聚合和可观测性。国家算力网强调算力资源统一接入、统一上报、统一调用和跨区域调度，我当前项目是单集群训练任务控制面的最小闭环，后续会向 queue/quota、多集群资源池和 GPU 指标方向补强。
 ```
 
 ## 2. 项目一句话
@@ -267,5 +275,14 @@ RDMA / GPUDirect RDMA
 - DCGM / Prometheus 指标采集
 - queue latency、job completion time、GPU utilization 等平台指标
 - 至少一个失败案例的完整复盘文档
+- queue / quota / priority 的对象模型和最小实现
+- 多集群 / 多资源池调度的基本心智
+- 算力网语境下的资源统一接入、统一上报、统一调度表达
 
 不建议继续横向扩展太多新主题。下一步更有价值的是把当前项目 README、架构图和失败案例补齐。
+
+投递前按这份清单收口：
+
+```text
+docs/pre-interview-gap-closure-plan.md
+```
