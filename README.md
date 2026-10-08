@@ -18,6 +18,9 @@
 - [AI Infra 项目面试手册](./docs/interview-playbook.md)：项目讲法、高频追问、诚实边界和简历表述草稿。
 - [三项目投递前查漏补缺清单](./docs/pre-interview-gap-closure-plan.md)：投初级岗位前需要补齐的薄弱点、路径和验收标准。
 - [三项目投递前查漏补缺进度](./docs/pre-interview-gap-closure-progress.md)：记录补缺项状态、产物路径和当前下一步。
+- [DDP 通信边界](./docs/ddp-communication-boundary.md)：记录 kind + CPU/Gloo 已验证内容，以及 GPU/NCCL/RDMA 未验证边界。
+- [TrainJob happy path 复现记录](./docs/happy-path-rerun-2026-05-21.md)：记录从清理状态重新跑通 TrainJob、Scheduler、DDP 和 checkpoint 的证据。
+- [资源不足失败复盘](./docs/failure-case-insufficient-resource-2026-05-21.md)：记录主动制造 extended resource 不足导致 worker Pending 的排障证据。
 - [国家算力网方向与个人转型应对](./docs/national-computing-network-response.md)：将当前项目映射到算力网方向，调整后续学习与面试表达。
 - [AI Infra 转型路线](./AIInfra转型路线.md)：长期路线和阶段目标。
 - [转型评估与规划基准](./转型评估与规划基准.md)：岗位定位、优先级和项目收口原则。

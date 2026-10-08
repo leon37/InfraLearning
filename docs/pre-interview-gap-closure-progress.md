@@ -51,31 +51,31 @@ docs/pre-interview-gap-closure-plan.md
 | G6 | Scheduler Plugin | 调度增强路线：queue/quota/priority | 可放入 `docs/scheduler-resource-accounting.md` 或独立文档 | 暂存 | queue/quota/priority 与 preemption 边界仍有表达分歧，先暂存后续复核 |
 | G7 | DDPLab | DDP worker 启动契约 | `docs/ddp-worker-contract.md` | 已完成 | 已能说清 torchrun/controller/init_process_group、rank0 Service、attempt selector、LOCAL_RANK 边界 |
 | G8 | DDPLab | checkpoint 恢复边界 | `docs/checkpoint-restore-boundary.md` | 已完成 | 已能说清 latest.pt 字段、恢复顺序、optimizer 状态、rank0-only PVC 与 RWO/local-path 边界 |
-| G9 | DDPLab | Gloo/NCCL/RDMA 通信边界 | `docs/ddp-communication-boundary.md` | 未开始 | - |
-| G10 | 端到端 | 从空集群复现 happy path | 记录到对应复盘文档 | 未开始 | - |
-| G11 | 端到端 | 主动制造一次失败并完成排障 | 记录到对应复盘文档 | 未开始 | - |
-| G12 | 面试表达 | 二次模拟面试复测 | 更新 `docs/interview-playbook.md` | 未开始 | - |
+| G9 | DDPLab | Gloo/NCCL/RDMA 通信边界 | `docs/ddp-communication-boundary.md` | 已完成 | 已能说清 kind + Pod 网络 + Gloo backend 验证了 DDP 契约和控制面，没有验证 GPU/NCCL/RDMA 性能 |
+| G10 | 端到端 | 从空集群复现 happy path | `docs/happy-path-rerun-2026-05-21.md` | 已完成 | 已从清理状态重新跑通 TrainJob -> Scheduler -> DDP -> checkpoint -> Succeeded |
+| G11 | 端到端 | 主动制造一次失败并完成排障 | `docs/failure-case-insufficient-resource-2026-05-21.md` | 已完成 | 已能从 Events 判断 custom scheduler 接管、Filter 资源不足、非 DDP worker 代码问题 |
+| G12 | 面试表达 | 二次模拟面试复测 | `docs/interview-playbook.md` | 已完成 | 二次复测评分 78/100；已更新面试手册中的提升点、残余短板和推荐表达 |
 
 ## 4. 当前任务
 
 当前只推进一个最小任务：
 
 ```text
-G9：Gloo/NCCL/RDMA 通信边界。
+投递前收口：复核 G2/G6 暂存项或开始投递准备。
 ```
 
 目标产物：
 
 ```text
-docs/ddp-communication-boundary.md
+按需更新简历表述和投递材料
 ```
 
 验收标准：
 
 ```text
-能说清当前 kind + CPU/Gloo 实验验证了什么。
-能说清它没有验证 GPU/NCCL/RDMA 哪些能力。
-能把当前项目价值收回到 AI workload 控制面和 DDP 启动契约。
+G2 的真实故障排障可在后续实操中补验。
+G6 的 queue/quota/priority 边界可在平台化对象模型设计时复核。
+简历表达保持控制面和调度扩展边界，不包装成 GPU/NCCL/RDMA 性能优化经验。
 ```
 
 ## 5. 完成记录
@@ -256,3 +256,82 @@ docs/ddp-communication-boundary.md
 - 暂停项：根据当前窗口上下文沉淀 `aiinfra-gap-closure` skill 草稿
 - Skill 产物：`skills/aiinfra-gap-closure/SKILL.md`
 - 恢复后从 G9 继续
+- 进入 G9 初始验收：
+  - 场景：当前 demo 使用 kind 集群，worker 通过 `init_process_group(backend="gloo")` 跑 CPU tensor
+  - 用户回答：验证了 rendezvous 入口和 collective communication；不知道 GPU 训练通信能力有哪些；认为可以类比为把计算和通信放到不同硬件上
+  - 暴露短板：能说出 Gloo 验证了 DDP 启动和 collective，但对 NCCL/RDMA/GPU 通信边界不清；“只是换硬件”说法风险高，容易被误解为夸大 GPU 通信经验
+  - 当前纠偏方向：把当前 demo 的价值收回到平台控制面、DDP 启动契约、Pod 网络下 Gloo collective；明确没有验证 CUDA tensor、NCCL、多机 GPU、RDMA/GPUDirect RDMA 和真实 scaling
+- G9 验收题 2：
+  - 问题：Gloo 和 NCCL 的最小区别，以及为什么 `init_process_group` 成功不代表 NCCL `all_reduce` 一定成功
+  - 用户回答：当前 Gloo 跑 CPU tensor；NCCL 面向 GPU 训练；`init_process_group` 代表所有 rank 加入同一个 process group，但认为 `all_reduce` 是训练脚本自身逻辑，与 `init_process_group` 无关
+  - 纠偏：前两点正确；第三点需要改成 `init_process_group` 只说明通信组初始化成功，具体 collective 操作仍依赖 backend、设备映射、CUDA/NCCL 环境和网络路径。`all_reduce` 不是无关逻辑，而是使用该 process group 执行的具体 collective
+- G9 RDMA 边界纠偏：
+  - 用户反馈：完全不了解 RDMA
+  - 最小结论：RDMA / GPUDirect RDMA 不是控制面问题，而是多机 GPU 训练通信路径性能问题；当前 kind + CPU/Gloo demo 完全没有验证这条路径
+  - 术语偏好：后续使用“显存”而不是“GPU 内存”，避免和 CPU 主机内存混淆
+- G9 验收题 3：
+  - 问题：项目是否验证了真实 GPU 集群里的 NCCL/RDMA 性能；当前验证了什么；真实 GPU 环境第一批要补什么
+  - 用户回答：没有验证真实 GPU 集群 NCCL/RDMA 性能；实际验证了基于 Pod 网络和 CPU tensor 的 DDP 契约，重点在平台控制面；不知道第一批要补什么
+  - 结论：前两点合格；第三点需要补最小路线：NVIDIA device plugin、CUDA tensor、NCCL backend、GPU/DCGM 指标，RDMA 先只保持边界认知
+- G9 最终验收：
+  - 用户回答：当前验证了 kind + Pod 网络 + Gloo backend 下的 DDP 启动契约和平台控制面逻辑链路；没有验证 NCCL 和 GPU 相关能力；下一步先补 NVIDIA device plugin，然后 CUDA tensor、NCCL backend，最后 GPU 指标
+  - 结论：G9 通过。补充 RDMA / GPUDirect RDMA 只保留边界认知，不放第一批实操
+- G9 文档完成：新增 `docs/ddp-communication-boundary.md`
+- 当前下一步：进入 G10，从空集群复现 happy path
+- 进入 G10 基线观察：
+  - 当前集群仍有旧 `trainjob-sample`
+  - 旧 worker Pod：`trainjob-sample-attempt-0-rank-0/1`，均为 `Completed`
+  - 旧 rank0 Service：`trainjob-sample-master`
+  - 旧 checkpoint PVC/PV：`trainjob-checkpoint-pvc`，`Bound`，RWO，`standard`
+  - Node 资源账本仍在：`kind-worker=1500k`，`kind-worker2=3M`
+  - 还有无关对象：`my-service` CrashLoopBackOff、`pvc-probe` Running
+  - 下一步：只清理 TrainJob demo 相关对象，暂不处理无关 `my-service`
+- G10 清理结果：
+  - 用户确认旧 TrainJob demo 相关对象已不在
+  - 重新创建 `trainjob-checkpoint-pvc`
+  - 观察结果：PVC `STATUS=Pending`，`STORAGECLASS=standard`
+  - 判定：kind local-path 下 Pending 可接受，通常等第一个使用 PVC 的 Pod 出现后绑定
+  - 下一步：启动 TrainJob controller 和 custom scheduler 后再创建 TrainJob
+- G10 happy path 复现进展：
+  - TrainJob controller 与 custom scheduler 均已正常运行
+  - 创建 `trainjob-sample` 后，rank0/rank1 worker Pod 均进入 `Running`，随后均 `Completed`
+  - rank0 调度到 `kind-worker`，rank1 调度到 `kind-worker2`
+  - rank0 Service `trainjob-sample-master` 已创建，selector 为 `attempt=0,rank=0,trainjob-name=trainjob-sample`
+  - `trainjob-checkpoint-pvc` 已从 `Pending` 变为 `Bound`
+  - TrainJob status 已进入 `Succeeded`
+  - rank0 日志出现 `rank=0`、`world_size=2` 和 3 步 step 指标
+  - 下一步：验证本次新 PV 背后是否存在 `latest.pt`
+- G10 checkpoint 验证：
+  - 本次 PV：`pvc-e60fcd5e-4ea5-4f60-946e-16f7b7b1011b`
+  - kind node 路径：`/var/local-path-provisioner/pvc-e60fcd5e-4ea5-4f60-946e-16f7b7b1011b_default_trainjob-checkpoint-pvc`
+  - 用户在 `kind-worker` 内观察到 `latest.pt`
+  - 文件大小：`73929`
+  - 判定：rank0 checkpoint 写入本次新 PVC 背后的 PV 成功
+- G10 文档完成：新增 `docs/happy-path-rerun-2026-05-21.md`
+- G10 结论：通过
+- 当前下一步：进入 G11，主动制造一次失败并完成排障
+- G11 失败复现：
+  - 创建 `trainjob-fail-resource`
+  - 将 `aiinfra.leon.com/gpu-capacity` requests/limits 调到超过所有 worker Node allocatable
+  - `describe pod` Events 出现 `FailedScheduling`
+  - `From=my-custom-scheduler`
+  - Message 包含：`1 node(s) had untolerated taint {node-role.kubernetes.io/control-plane: }`，`2 Insufficient aiinfra.leon.com/gpu-capacity`
+  - preemption 结果：`Preemption is not helpful for scheduling`，`No preemption victims found for incoming pod`
+  - 初步结论：custom scheduler 已接管，失败发生在 Filter 阶段资源不足，不是 DDP worker 代码问题
+- G11 文档初稿完成：新增 `docs/failure-case-insufficient-resource-2026-05-21.md`
+- 当前下一步：用户不看文档，复述这次失败归因
+- G11 最终验收：
+  - 用户回答：从 `From=my-custom-scheduler` 判断 custom scheduler 已接管；`FitResources`/资源匹配属于 Filter 阶段；看到的 Events 不是 DDP worker 代码问题；下一步对比 Pod requests 和 Node allocatable
+  - 纠偏：插件名更准确说法是 `NodeResourcesFit`；这不是 DDP worker 代码问题的直接原因是 Pod 尚未成功调度/绑定运行，Python worker 进程没有执行
+  - 结论：G11 通过
+- 当前下一步：进入 G12，进行二次模拟面试复测
+- G12 复测方式调整：
+  - 用户反馈：继续问 G1-G9 已经问过和复习过的问题，收益低，像第三遍重复
+  - 调整结论：G12 不再复述原题，改为综合场景题、反事实追问、设计取舍题，重点测试迁移能力而不是背诵
+- G12 综合题结果：
+  - 能将 `rank1 Pending + FailedScheduling + Insufficient` 归到 scheduler 层，并能说明 rank0 因 DDP group 不完整而无 step 指标
+  - 能说明去掉 Service selector 中 `attempt` 会导致旧 attempt rank0 进入 endpoints，影响新 DDP group rendezvous
+  - 平台化设计中能提出 `queueName`、`priority`、`queuedReason`，但 quota 更适合挂到 Queue/Project/Tenant 对象而不是散落在每个 TrainJob 中
+  - GPU 边界表达能承认没有验证 NCCL/RDMA，但“DDP 内部替换 GPU 逻辑，TrainJob/SchedulerPlugin 不需要改变”这句过于绝对；更准确是控制面抽象可复用，但资源表达、device plugin、NCCL 参数、GPU 指标和拓扑调度都要补
+- G12 文档更新：`docs/interview-playbook.md` 新增二次模拟面试复测结论
+- G12 结论：通过，建议评分 `78/100`

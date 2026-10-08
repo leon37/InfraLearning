@@ -286,3 +286,48 @@ RDMA / GPUDirect RDMA
 ```text
 docs/pre-interview-gap-closure-plan.md
 ```
+
+## 9. 二次模拟面试复测
+
+复测时间：
+
+```text
+2026-05-21
+```
+
+复测结论：
+
+```text
+相比第一次模拟面试，项目主线、状态机、资源账本、Pending 排障、DDP 启动契约和 checkpoint 边界明显更稳。
+当前已经可以开始面向 AI Infra 初级 / 云原生训练平台控制面岗位做投递准备。
+```
+
+建议评分：
+
+```text
+78 / 100
+```
+
+相对第一次主要提升：
+
+- 能说清 `TrainJob -> controller -> worker Pod -> schedulerName -> custom scheduler -> DDP worker -> checkpoint -> status` 的端到端链路。
+- 能区分当前 TrainJob 状态聚合和真正 gang scheduling。
+- 能解释 `Pod.requests`、`Node.status.allocatable`、scheduler cache 中已分配 requests 的关系。
+- 能从 `FailedScheduling + Insufficient` 判断 scheduler Filter 阶段资源不足。
+- 能说清 `torchrun`、TrainJob controller、`init_process_group` 的职责边界。
+- 能说清 rank0 Service、`attempt` selector、rank0-only checkpoint 和 RWO/local-path 的限制。
+- 能诚实说明 kind + CPU/Gloo 没有验证真实 GPU/NCCL/RDMA 性能。
+
+仍需注意：
+
+- 平台化调度对象模型仍不稳，尤其是 queue、quota、priority、preemption 的边界。
+- 真实 GPU 环境的第一批补齐项已经能说出，但 device plugin、NCCL、DCGM 的细节仍是边界认知。
+- 回答真实 GPU 迁移时，不要说“只是 DDP 内部替换 GPU 逻辑，TrainJob/SchedulerPlugin 不需要改变”。更准确是：控制面抽象可以复用，但资源名、device plugin、NCCL 启动参数、GPU 指标、拓扑信息和调度策略都需要接入或调整。
+
+推荐面试表达：
+
+```text
+这个项目没有验证真实 GPU/NCCL/RDMA 性能。它验证的是 AI 训练任务的平台控制面：TrainJob 如何表达分布式训练任务，controller 如何展开 worker 并注入 DDP 启动契约，scheduler 如何基于 Kubernetes 资源账本完成调度，worker 如何通过 Gloo 在 Pod 网络下完成 DDP 训练，rank0 如何把 checkpoint 写入 PVC。
+
+如果进入真实 GPU 环境，我会优先接 NVIDIA device plugin，让 GPU 资源进入 Node allocatable；再把 worker 切到 CUDA tensor 和 NCCL backend；随后补 DCGM/Prometheus 指标和 GPU/NIC/NUMA 拓扑信息。TrainJob/controller 的对象模型可以复用，但资源表达、指标、调度策略和 worker 启动参数都需要按真实 GPU 集群补齐。
+```

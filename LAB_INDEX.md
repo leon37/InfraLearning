@@ -14,7 +14,7 @@
 | Week 10-12 | TrainJob Operator v2 接入 DDP worker | `../AIInfraDDPLab`, `../AIInfraTrainJob` | `../AIInfraDDPLab/docs/stage-07-platform-semantics.md`, `学习进度.md` |
 | Week 13-14 | Scheduler Plugin + TrainJob + DDP 完整链路 | `../AIInfraSchedulerPlugin`, `../AIInfraTrainJob`, `../AIInfraDDPLab` | `学习进度.md`, `../AIInfraSchedulerPlugin/cmd/scheduler-plugin/scheduler-config.yaml`, `../AIInfraSchedulerPlugin/pkg/plugin/node_label_score.go` |
 | Week 15 | checkpoint、PVC、通信链路边界 | `../AIInfraTrainJob`, `../AIInfraDDPLab`, `docs/` | `docs/aiinfra-demo.md`, `学习进度.md` |
-| Week 16 | 项目收口与算力网方向表达 | `docs/`, `../AIInfraTrainJob`, `../AIInfraSchedulerPlugin`, `../AIInfraDDPLab` | `docs/interview-playbook.md`, `docs/national-computing-network-response.md`, `docs/pre-interview-gap-closure-plan.md`, `docs/pre-interview-gap-closure-progress.md` |
+| Week 16 | 项目收口与算力网方向表达 | `docs/`, `../AIInfraTrainJob`, `../AIInfraSchedulerPlugin`, `../AIInfraDDPLab` | `docs/interview-playbook.md`, `docs/national-computing-network-response.md`, `docs/pre-interview-gap-closure-plan.md`, `docs/pre-interview-gap-closure-progress.md`, `docs/ddp-communication-boundary.md`, `docs/happy-path-rerun-2026-05-21.md`, `docs/failure-case-insufficient-resource-2026-05-21.md` |
 
 ## 快速导航
 - [主路线图](./AIInfra转型路线.md)
@@ -23,6 +23,9 @@
 - [面试手册](./docs/interview-playbook.md)
 - [投递前查漏补缺](./docs/pre-interview-gap-closure-plan.md)
 - [查漏补缺进度](./docs/pre-interview-gap-closure-progress.md)
+- [DDP 通信边界](./docs/ddp-communication-boundary.md)
+- [Happy path 复现](./docs/happy-path-rerun-2026-05-21.md)
+- [资源不足失败复盘](./docs/failure-case-insufficient-resource-2026-05-21.md)
 - [国家算力网应对](./docs/national-computing-network-response.md)
 - [转型评估](./转型评估与规划基准.md)
 - [核心指令](./AGENTS.md)
